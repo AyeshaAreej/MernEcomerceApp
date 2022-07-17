@@ -1,7 +1,10 @@
 const Product=require('../models/product')
 
+const catchAsyncErrors = require('../middlewares/catchAsyncErrors')
+// const ErrorHandler=require('../utils/errorHandler')
+
 //create new product=> /api/v1/product/new
-const newProduct= async(req,res,next)=>{
+const newProduct= catchAsyncErrors(async(req,res,next)=>{
     const product = await Product.create(req.body);
     console.log('product created')
     res.status(201).json({
@@ -9,7 +12,7 @@ const newProduct= async(req,res,next)=>{
         product
     })
 
-}
+})
 
 //get all products => /api/v1/products
 const getProducts= async (req,res,next)=>{
@@ -26,14 +29,19 @@ const getProducts= async (req,res,next)=>{
 //Get single product details => /api/v1/product/:id
 
 const getSingleProduct=async(req,res,next)=>{
+
     const product=await Product.findById(req.params.id);
 
-    if(!product){
+    if(!product){  
+         // return next(new ErrorHandler('Product not found',404));
         return res.status(404).json({
             success:false,
             message:'Product not found'
         })
-    }
+
+    } 
+       
+    
     res.status(200).json({
         success:true,
         product
